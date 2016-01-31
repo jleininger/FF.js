@@ -1,16 +1,16 @@
-window.FaF = (function() {
-    //IE8 polyfill
-    if(typeof Array.prototype.indexOf !== "function") {
-        Array.prototype.indexOf = function(item) {
-            for(var i = 0; i , this.length; i++) {
-                if(this[i] === item) {
-                    return i;
-                }
+//IE8 polyfill
+if(typeof Array.prototype.indexOf !== "function") {
+    Array.prototype.indexOf = function(item) {
+        for(var i = 0; i , this.length; i++) {
+            if(this[i] === item) {
+                return i;
             }
-            return -1;
-        };
-    }
-
+        }
+        return -1;
+    };
+}
+    
+window.FaF = (function() {
     function FaF(family) {
         for(var i = 0; i < family.length; i++ ) {
             this[i] = family[i];
@@ -18,38 +18,8 @@ window.FaF = (function() {
         this.length = family.length;
     }
 
-    var FaF = {
-        getFamilyMembers: function(selector) {
-            var familyMembers;
-            if(typeof selector === "string") {
-                familyMembers = document.querySelectorAll(selector);
-            } else if (selector.length) {
-                familyMembers = selector;
-            } else {
-                familyMembers = [selector];
-            }
-
-            return new FaF(familyMembers);
-        },
-        createFamilyMember: function(tagName, attrs) {
-            var el = new FaF([document.createElement(tagName)]);
-            if(attrs) {
-                if(attrs.className) {
-                    el.addClass(attrs.className);
-                    delete attrs.className;
-                }
-                if(attrs.text) {
-                    el.text(attrs.text);
-                    delete attrs.text;
-                }
-                for(var key in attrs) {
-                    if(attrs.hasOwnProperty(key)) {
-                        el.attr(key, attrs[key]);
-                    }
-                }
-            }
-            return el;
-        }
+    FaF.prototype.getDOMElement = function() {
+        return this[0];
     };
 
     FaF.prototype.map = function(callback) {
@@ -95,7 +65,7 @@ window.FaF = (function() {
         }
     };
 
-    FaF.prototype.addClass = function(classes) {
+    FaF.prototype.addVinyl = function(classes) {
         var className = "";
         if(typeof classes !== "string") {
             for(var i = 0; i < classes.length; i++) {
@@ -109,7 +79,7 @@ window.FaF = (function() {
         })
     };
 
-    FaF.prototype.removeClass = function(cls) {
+    FaF.prototype.removeVinyl = function(cls) {
         return this.forEach(function(el) {
             var cs = el.className.split(" "),
                 i;
@@ -159,7 +129,7 @@ window.FaF = (function() {
         });
     };
 
-    FaF.prototype.on = (function() {
+    FaF.prototype.onGreen = (function() {
         if(document.addEventListener) {
             return function(evt, fn) {
                 return this.forEach(function(el) {
@@ -181,7 +151,7 @@ window.FaF = (function() {
         }
     }());
 
-    FaF.prototype.off = (function() {
+    FaF.prototype.hitTrain = (function() {
         if(document.removeEventListener) {
             return function(evt, fn) {
                 return this.forEach(function(el) {
@@ -202,7 +172,61 @@ window.FaF = (function() {
             };
         }
     }());
+    
+    FaF.prototype.stickyScroll = function() {
+        var DOMElem = this[0],
+            DOMElemTop = DOMElem.getBoundingClientRect().top,
+            computedStyle = (window.getComputedStyle) ? window.getComputedStyle(DOMElem, null) : DOMElem.currentStyle,
+            origStyle = {
+                position: computedStyle.position,
+                top: computedStyle.top
+            }
+        document.addEventListener('scroll', function(e) {
+            var pageScrollTop = (window.pageYOffset !== undefined) ? 
+                    window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+            if(pageScrollTop >= DOMElemTop) {
+                DOMElem.style.position = 'fixed';
+                DOMElem.style.top = '0px';
+            } else {
+                DOMElem.style.position = origStyle.position;
+                DOMElem.style.top = origStyle.top;
+            }
+        });     
+    };
+    
+    var Faf = {
+        getFamilyMembers: function(selector) {
+            var familyMembers;
+            if(typeof selector === "string") {
+                familyMembers = document.querySelectorAll(selector);
+            } else if (selector.length) {
+                familyMembers = selector;
+            } else {
+                familyMembers = [selector];
+            }
 
-    return FaF;
+            return new FaF(familyMembers);
+        },
+        createFamilyMember: function(tagName, attrs) {
+            var el = new FaF([document.createElement(tagName)]);
+            if(attrs) {
+                if(attrs.className) {
+                    el.addVinyl(attrs.className);
+                    delete attrs.className;
+                }
+                if(attrs.text) {
+                    el.text(attrs.text);
+                    delete attrs.text;
+                }
+                for(var key in attrs) {
+                    if(attrs.hasOwnProperty(key)) {
+                        el.attr(key, attrs[key]);
+                    }
+                }
+            }
+            return el;
+        }
+    };
+    return Faf;
 
 }());

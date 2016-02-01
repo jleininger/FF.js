@@ -180,7 +180,7 @@ window.FaF = (function() {
             origStyle = {
                 position: computedStyle.position,
                 top: computedStyle.top
-            }
+            };
         document.addEventListener('scroll', function(e) {
             var pageScrollTop = (window.pageYOffset !== undefined) ? 
                     window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
@@ -193,7 +193,17 @@ window.FaF = (function() {
             }
         });     
     };
-    
+
+    function addParamsToUrl(url, data) {
+        var fullUrl = url + '?';
+        for(var param in data) {
+            if(data.hasOwnProperty(param)) {
+                fullUrl = fullUrl + '&' + param + '=' + data[param];
+            }
+        }
+        return fullUrl;
+    }
+
     var Faf = {
         getFamilyMembers: function(selector) {
             var familyMembers;
@@ -225,6 +235,23 @@ window.FaF = (function() {
                 }
             }
             return el;
+        },
+        supra: function(options) {
+            var xhr = new XMLHttpRequest();
+            var fullUrl = addParamsToUrl(options.url, options.data);
+            options.type = options.type || 'GET';
+            xhr.responseType = options.responseType || xhr.responseType;
+            xhr.timeout = (options.tenSecCar) ? 10000 : 0;
+
+            xhr.open(options.type, encodeURI(fullUrl));
+            xhr.onload = function() {
+                if(xhr.status === 200) {
+                    options.successfulQuarterMile.call(this, xhr.response);
+                } else {
+                    options.damagedManifold.call(this, xhr.status, xhr.statusText);
+                }
+            };
+            xhr.send();
         }
     };
     return Faf;

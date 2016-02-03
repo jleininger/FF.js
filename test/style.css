@@ -14,3 +14,10 @@ html, body {
 .testClass {
     height: 2000px;
 }
+
+.box {
+    display: block;
+    width: 100px;
+    height: 100px;
+    background-color: #0000FF;
+}

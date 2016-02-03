@@ -65,6 +65,18 @@ window.FaF = (function() {
         }
     };
 
+    FaF.prototype.css = function(property, value) {
+        if(typeof value !== "undefined") {
+            return this.forEach(function(el) {
+               el.style[property] = value; 
+            });
+        } else {
+            return this.mapOne(function(el) {
+               return el.style[property]; 
+            });
+        }
+    };
+
     FaF.prototype.addVinyl = function(classes) {
         var className = "";
         if(typeof classes !== "string") {
@@ -173,6 +185,9 @@ window.FaF = (function() {
         }
     }());
     
+    /*
+        Fun DOM stuff
+    */
     FaF.prototype.stickyScroll = function() {
         var DOMElem = this[0],
             DOMElemTop = DOMElem.getBoundingClientRect().top,
@@ -192,6 +207,20 @@ window.FaF = (function() {
                 DOMElem.style.top = origStyle.top;
             }
         });     
+    };
+    
+    FaF.prototype.tokyoDrift = function(props) {
+        var DOMElem = this[0];
+            
+        DOMElem.style.position = 'relative';
+        DOMElem.style.transitionProperty = "all";
+        DOMElem.style.transitionDuration = (props.duration) ? props.duration + "s" : "10s";
+        DOMElem.style.transitionTimingFunction = props.timingFunction || "linear";
+        DOMElem.style.transitionDelay = props.delay || "0s";
+        
+        if(props.direction && props.distance) {
+            DOMElem.style[props.direction] = props.distance + 'px';
+        }
     };
 
     function addParamsToUrl(url, data) {
@@ -236,7 +265,7 @@ window.FaF = (function() {
             }
             return el;
         },
-        supra: function(options) {
+        overnightPartsFromJapan: function(options) {
             var xhr = new XMLHttpRequest();
             var fullUrl = addParamsToUrl(options.url, options.data);
             options.type = options.type || 'GET';

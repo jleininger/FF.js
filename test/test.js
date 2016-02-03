@@ -5,7 +5,7 @@
     testId.stickyScroll();
 
     //AJAX test
-    FaF.supra({
+    FaF.overnightPartsFromJapan({
         url: 'http://api.openweathermap.org/data/2.5/weather',
         dataType: 'json',
         data: {
@@ -18,5 +18,15 @@
         damagedManifold: function(status, text) {
             console.log(status, text);
         }
-    })
+    });
+    
+    testId.css('backgroundColor', '#333333');
+    testId.css('color', '#FFFFFF');
+    testId.text('Hello World!');
+    
+    var createdElem = FaF.createFamilyMember('div', {className: 'box'});
+    var body = FaF.getFamilyMembers('body');
+    body.append(createdElem);
+    
+    createdElem.tokyoDrift({ direction: 'left', distance: 100, duration: 2});
 }());

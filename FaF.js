@@ -18,9 +18,7 @@ window.FaF = (function() {
         this.length = family.length;
     }
 
-    FaF.prototype.getDOMElement = function() {
-        return this[0];
-    };
+    FaF.prototype.DOMElement = this[0];
 
     FaF.prototype.map = function(callback) {
         var results = [];
@@ -218,8 +216,30 @@ window.FaF = (function() {
         DOMElem.style.transitionTimingFunction = props.timingFunction || "linear";
         DOMElem.style.transitionDelay = props.delay || "0s";
         
-        if(props.direction && props.distance) {
-            DOMElem.style[props.direction] = props.distance + 'px';
+        this.move = function(moveDetails) {
+            if(moveDetails.direction) {
+                var dir = moveDetails.direction.toLowerCase(),
+                    translate = 'translate';
+                    
+                switch(dir) {
+                    case 'left':
+                        translate += 'X(' + moveDetails.distance + 'px)';
+                        break;
+                    case 'right':
+                        translate += 'X(' + -moveDetails.distance + 'px)';
+                        break;
+                    case 'up':
+                        translate += 'Y(' + -moveDetails.distance + 'px)';
+                        break;
+                    case 'down':
+                        translate += 'Y(' + moveDetails.distance + 'px)';
+                        break;
+                }
+                
+                DOMElem.style.transform = translate;
+            } else {
+                console.error('Must specify a direction!');
+            }    
         }
     };
 

@@ -28,5 +28,8 @@
     var body = FaF.getFamilyMembers('body');
     body.append(createdElem);
     
-    createdElem.tokyoDrift({ direction: 'left', distance: 100, duration: 2});
+    createdElem.tokyoDrift({ duration: 10 });
+    createdElem.onGreen('click', function(e) {
+       createdElem.move({ direction: 'up', distance: 200 });
+    });
 }());

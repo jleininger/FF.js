@@ -63,7 +63,7 @@ window.FaF = (function() {
         }
     };
 
-    FaF.prototype.css = function(property, value) {
+    FaF.prototype.decal = function(property, value) {
         if(typeof value !== "undefined") {
             return this.forEach(function(el) {
                el.style[property] = value; 
@@ -187,61 +187,74 @@ window.FaF = (function() {
         Fun DOM stuff
     */
     FaF.prototype.stickyScroll = function() {
-        var DOMElem = this[0],
-            DOMElemTop = DOMElem.getBoundingClientRect().top,
-            computedStyle = (window.getComputedStyle) ? window.getComputedStyle(DOMElem, null) : DOMElem.currentStyle,
+        return this.forEach(function(el) {
+            var elTop = el.getBoundingClientRect().top,
+            computedStyle = (window.getComputedStyle) ? window.getComputedStyle(el, null) : el.currentStyle,
             origStyle = {
                 position: computedStyle.position,
                 top: computedStyle.top
             };
-        document.addEventListener('scroll', function(e) {
-            var pageScrollTop = (window.pageYOffset !== undefined) ? 
-                    window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-            if(pageScrollTop >= DOMElemTop) {
-                DOMElem.style.position = 'fixed';
-                DOMElem.style.top = '0px';
-            } else {
-                DOMElem.style.position = origStyle.position;
-                DOMElem.style.top = origStyle.top;
-            }
+            document.addEventListener('scroll', function(e) {
+                var pageScrollTop = (window.pageYOffset !== undefined) ? 
+                        window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+                if(pageScrollTop >= elTop) {
+                    el.style.position = 'fixed';
+                    el.style.top = '0px';
+                } else {
+                    el.style.position = origStyle.position;
+                    el.style.top = origStyle.top;
+                }
+            });    
         });     
     };
     
     FaF.prototype.tokyoDrift = function(props) {
-        var DOMElem = this[0];
+        return this.forEach(function(el) {
+            el.style.position = 'relative';
+            el.style.transitionProperty = "all";
+            el.style.transitionDuration = (props.duration) ? props.duration + "s" : "10s";
+            el.style.transitionTimingFunction = props.timingFunction || "linear";
+            el.style.transitionDelay = props.delay || "0s";
             
-        DOMElem.style.position = 'relative';
-        DOMElem.style.transitionProperty = "all";
-        DOMElem.style.transitionDuration = (props.duration) ? props.duration + "s" : "10s";
-        DOMElem.style.transitionTimingFunction = props.timingFunction || "linear";
-        DOMElem.style.transitionDelay = props.delay || "0s";
-        
-        this.move = function(moveDetails) {
-            if(moveDetails.direction) {
-                var dir = moveDetails.direction.toLowerCase(),
-                    translate = 'translate';
+            this.move = function(moveDetails) {
+                if(moveDetails.direction) {
+                    var dir = moveDetails.direction.toLowerCase(),
+                        translate = 'translate';
+                        
+                    switch(dir) {
+                        case 'left':
+                            translate += 'X(' + moveDetails.distance + 'px)';
+                            break;
+                        case 'right':
+                            translate += 'X(' + -moveDetails.distance + 'px)';
+                            break;
+                        case 'up':
+                            translate += 'Y(' + -moveDetails.distance + 'px)';
+                            break;
+                        case 'down':
+                            translate += 'Y(' + moveDetails.distance + 'px)';
+                            break;
+                    }
                     
-                switch(dir) {
-                    case 'left':
-                        translate += 'X(' + moveDetails.distance + 'px)';
-                        break;
-                    case 'right':
-                        translate += 'X(' + -moveDetails.distance + 'px)';
-                        break;
-                    case 'up':
-                        translate += 'Y(' + -moveDetails.distance + 'px)';
-                        break;
-                    case 'down':
-                        translate += 'Y(' + moveDetails.distance + 'px)';
-                        break;
-                }
-                
-                DOMElem.style.transform = translate;
-            } else {
-                console.error('Must specify a direction!');
-            }    
-        }
+                    el.style.transform = translate;
+                } else {
+                    console.error('Must specify a direction!');
+                }    
+            }       
+        });
     };
+    
+    FaF.prototype.paulWalker = function() {
+        this.decal('textAlign', 'center');
+        this.append(Faf.createFamilyMember('iframe', {
+            width: '420',
+            height: '315',
+            style: 'margin: 0 auto;',
+            src: 'https://www.youtube.com/embed/zN77C0apk9w?rel=0&autoplay=1',
+            frameborder: '0',
+            allowfullscreen: true
+        }))
+    }
 
     function addParamsToUrl(url, data) {
         var fullUrl = url + '?';
@@ -285,19 +298,19 @@ window.FaF = (function() {
             }
             return el;
         },
-        overnightPartsFromJapan: function(options) {
+        overnightPartsFromJapan: function(requestProps) {
             var xhr = new XMLHttpRequest();
-            var fullUrl = addParamsToUrl(options.url, options.data);
-            options.type = options.type || 'GET';
-            xhr.responseType = options.responseType || xhr.responseType;
-            xhr.timeout = (options.tenSecCar) ? 10000 : 0;
+            var fullUrl = addParamsToUrl(requestProps.url, requestProps.data);
+            requestProps.type = requestProps.type || 'GET';
+            xhr.responseType = requestProps.responseType || xhr.responseType;
+            xhr.timeout = (requestProps.tenSecCar) ? 10000 : 0;
 
-            xhr.open(options.type, encodeURI(fullUrl));
+            xhr.open(requestProps.type, encodeURI(fullUrl));
             xhr.onload = function() {
                 if(xhr.status === 200) {
-                    options.successfulQuarterMile.call(this, xhr.response);
+                    requestProps.successfulQuarterMile.call(this, xhr.response);
                 } else {
-                    options.damagedManifold.call(this, xhr.status, xhr.statusText);
+                    requestProps.S.call(this, xhr.status, xhr.statusText);
                 }
             };
             xhr.send();
